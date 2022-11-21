@@ -1,0 +1,12 @@
+set xlabel "DeltaG_{MMPBSA} (kcal/mol)"
+set ylabel "Frequency"
+set terminal postscript eps enhanced color solid "Arial" 20
+set output 'LIGANDNAME_All.eps'
+
+stats "LIGANDNAME_All_DeltaE.dat" using 1 name "STATS"
+Gauss(x) = 1.0/(STATS_stddev*sqrt(2*pi)) * exp( -(x-STATS_mean)**2 / (2*STATS_stddev**2) )
+bin(x,width) = width*floor(x/width)
+bw=1.0
+
+plot Gauss(x) linecolor rgb "dark-blue" linewidth 3 notitle, "LIGANDNAME_All_DeltaE.dat" using (bin($1,bw)+bw/2):(1.0/(bw*STATS_records)) smooth frequency notitle with linespoints pointtype 13 linecolor rgb "dark-green"
+

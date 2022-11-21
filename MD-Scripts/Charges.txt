@@ -1,0 +1,2 @@
+#Lig	Prot	Charge
+APV	1HPV	0

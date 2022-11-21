@@ -1,0 +1,61 @@
+;       Made by Nicolas
+;       Input file for full molecular dynamics
+;       http://manual.gromacs.org/current/online/mdp-opt.html
+
+; RUN CONTROL PARAMETERS 
+integrator              = md       ; md = leap-frog algorithm, md-vv = velocity Verlet, sd = accurate leap-frog stochastic dynamics integrator (with local thermostat)
+dt                      = 0.002    ; time step (ps)
+nsteps                  = 2500000  ; number of steps, total 5 ns.
+
+; OUTPUT CONTROL OPTIONS
+energygrps              = Protein LIG Water_and_ions    ; Which energy group(s) to write to disk
+nstenergy               = 1000                          ; Write energies to disk every nstenergy steps
+nstxout                 = 1000                          ; Frequency to write coordinates to output trajectory file, the last coordinates are always written
+nstvout                 = 1000                          ; Frequency to write velocities to output trajectory, the last velocities are always written
+nstfout                 = 0                             ; Frequency to write forces to output trajectory.
+nstlog                  = 1000                          ; Frequency to write energies to log file, the last energies are always written
+
+; NEIGHBORSEARCHING PARAMETERS
+cutoff-scheme           = Verlet                ; How to generate the pair list  
+nstlist                 = 20                    ; Frequency to update the neighbor list
+ns-type                 = grid                  ; Method to determine neighbor list (simple, grid)
+pbc                     = xyz                   ; Periodic Boundary Conditions (yes/no)
+rlist                   = 1.0                   ; Cut-off distance for making neighbor list (short range forces)
+
+; OPTIONS FOR ELECTROSTATICS AND VDW    
+coulombtype             = PME           ; Treatment of long range electrostatic interactions. 
+rcoulomb                = 1.0           ; Distance in nm for the long range electrostatic cut-off. Must be equal to rlist for PME.
+vdwtype                 = Cut-off       ; Tells Gromacs how to treat van der Waals interactions (cut-off, Shift, etc.)
+rvdw                    = 1.0           ; Distance in nm for the LJ or Buckingham potential cut-off (long range Van der Waals) 
+dispcorr	        = EnerPres	; Apply long range dispersion corrections for Energy and Pressure
+fourierspacing          = 0.12          ; The maximum grid spacing in nm for the FFT grid when using PPPM or PME
+pme-order               = 4             ; Interpolation order for PME. 4 equals cubic interpolation. You might try 6/8/10 when running in parallel and simultaneously decrease grid dimension
+ewald-rtol              = 1e-5          ; Relative strength of the Ewald-shifted direct potential at rcoulomb
+optimize-fft            = yes           ; Calculate the optimal FFT plan for the grid at startup. This saves a few percent for long simulations, but takes a couple of minutes at start
+
+; TEMPERATURE COUPLING
+tcoupl                  = Nose-Hoover                  ; Couple temperature to external heat bath (V-rescale or Nose-Hoover but not Berendsen)
+tc-grps                 = Protein_LIG Water_and_ions   ; Use separate heat baths for Protein and Non-Protein groups
+tau-t                   = 0.8   0.8                    ; Coupling time constant, controlling strength of coupling
+ref-t                   = 300   300                    ; Temperature of heat bath
+
+; PRESSURE COUPLING (ON)
+pcoupl                  = Parrinello-Rahman     ; Pressure coupling on in NPT (for NVT, Pcoupl=no): Parrinello-Rahman or Berendsen
+pcoupltype              = isotropic             ; uniform scaling of box vectors
+tau-p                   = 1.0                   ; time constant, in ps
+ref-p                   = 1.0                   ; reference pressure, in bar
+compressibility         = 4.5e-5                ; isothermal compressibility of water, bar^-1
+
+; GENERATE VELOCITIES FOR STARTUP RUN
+gen-vel                 = no            ; Assign velocities to particles by taking them randomly from a Maxwell distribution. no if there was md done before.
+
+; OPTIONS FOR BONDS    
+constraints             = all-bonds     ; All bonds will be treated as constraints (fixed length)
+constraint-algorithm    = lincs         ; holonomic constraints
+lincs-iter              = 1             ; accuracy of LINCS
+lincs-order             = 4             ; also related to accuracy
+continuation            = yes           ; Yes if Restarting after NPT
+
+; MISC
+nstcomm                 = 100           ; Frequency for center of mass motion removal
+

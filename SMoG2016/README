@@ -1,0 +1,67 @@
+
+The files in this directory are related to the SMoG2016 scoring function to compute the interaction between protein and ligands (Debroise, Shakhnovich & Chéron, DOI: 10.1021/acs.jcim.6b00610). Source codes are released under the GNU GPL licence. Two programs are provided: SMoG2016 (to compute the score) and KBP2016-Training (to train the knowledge-based potential of the SMoG2016 function). To keep things simple, we have decided to gather all the functions in a single file for each program, thus the files are long.
+
+The instructions below are for a linux-based platform. They have not been tested on MacOS, but they should work. For use on Windows, they are working on the bash terminal now included in the last version of Windows10.
+
+1. Installation of OpenBabel via the repository.
+------------------------------------------------
+To compile the code, you need to have first installed the OpenBabel library. The first solution is to do it via the repository (note that you only need the OpenBabel libraries and not the program itself):
+* In Debian-based distributions (Ubuntu or Mint, e.g.): "sudo apt-get install libopenbabel-dev"
+* In Fedora, as a super-user: "yum install openbabel-devel.x86_64"
+* In OpenSuse, as a super-user: "zipper install libopenbabel-devel"
+
+2. Installation of OpenBabel via compilation.
+---------------------------------------------
+You can also decide to compile OpenBabel by yourself. You must first download it (https://sourceforge.net/projects/openbabel/files/). You can then follow the procedure described below (given for a clean Debian-based Linux system such as Ubuntu or LinuxMint):
+* mkdir ~/Programs
+* mkdir ~/Programs/Openbabel_2.4.1
+* sudo apt-get install g++ cmake wx-common wx2.8-headers libwxbase2.8-dev libxml2-dev zlib1g-dev libeigen2-dev libcairo2-dev python-dev libperl-dev
+* tar zxf openbabel-2.4.1.tar.gz
+* cd openbabel-2.4.1/
+* cmake -DCMAKE_INSTALL_PREFIX=~/Programs/Openbabel_2.4.1 -DBUILD_GUI=OFF -DENABLE_TESTS=ON
+* make
+* make install
+* make test
+In Fedora and OpenSuse, you only need to change the "sudo apt-get install" line with "yum" or "zipper" as a super-user. Note that the compiler g++ can be found in the package gcc-c++ in these two distributions. You need to either install OpenBabel from the repositories OR compile it, but you dont need to do both.
+
+3. Compilation of the programs.
+-------------------------------
+We are giving the example only for SMoG2016. For KBP2016-Training, you just need to replace "SMoG2016" by "KBP2016-Training" below.
+* If you have compiled OpenBabel by yourself, use (after adapting the path):
+g++ -O3 -Wall -std=c++11 -Wno-uninitialized -I/home/ncheron/Programs/Openbabel_2.4.1/include/openbabel-2.0 -lm -c SMoG2016.cpp -o SMoG2016.o
+g++ SMoG2016.o -o SMoG2016.exe -rdynamic /home/ncheron/Programs/Openbabel_2.4.1/lib/libopenbabel.so -Wl,-rpath,/home/ncheron/Programs/Openbabel_2.4.1/lib
+
+* Via repository, for Debian-based distributions:
+g++ -O3 -Wall -std=c++11 -Wno-uninitialized -I/usr/include/openbabel-2.0 -lm -c SMoG2016.cpp -o SMoG2016.o
+g++ SMoG2016.o -o SMoG2016.exe -rdynamic /usr/lib/libopenbabel.so -Wl,-rpath,/usr/lib
+
+* Via repository, for Fedora or OpenSuse based distributions:
+g++ -O3 -Wall -std=c++11 -Wno-uninitialized -I/usr/include/openbabel-2.0 -lm -c SMoG2016.cpp -o SMoG2016.o
+g++ SMoG2016.o -o SMoG2016.exe -rdynamic /usr/lib64/libopenbabel.so -Wl,-rpath,/usr/lib
+
+This has been tested for Ubuntu12.04, LinuxMint17.1, Fedora22, OpenSuse13.2. With newer versions of these distributions, the paths may be slightly different.
+
+4. Use of SMoG2016.
+-------------------
+To score a protein-ligand energy, use SMoG2016 with: "./SMoG2016.exe Protein.pdb Protein.sdf DeltaG" (different format can be used for the ligand, such as sdf or mol2), where DeltaG is the experimental value: the purpose of this is to display both the score and the experimental value in the output to check the correlation. If you don't know DeltaG, write anything instead ("DG" for example).
+
+Three files are needed to use the code: AmberAtomTypes.txt, VDWParameters.txt and a file for the knowledge-based potential (for example KBP-3.0-5.0-8.5.dat). AmberAtomTypes.txt and VDWParameters.txt are used to assigned the Lennard-Jones parameters to calculate the repulsion part of the function. If they are not present, the program can't work. They are coming from: http://pc164.materials.uoi.gr/dpapageo/files/amberparams/amber99sb-new.prm. We provide these files in the release.
+
+The file for the Knowledge-Based potential can be changed in the source code (search for "KBP-3.0-5.0-8.5.dat"). On the first line are the shell sizes. We provide one file that has been trained on the testing set made of 1038 diverse complexes (see main article). It has been prepared with Openbabel 2.4.1. The atom typing is different in Openbabel 2.3.2 and 2.4.1, so the energy terms will be slightly different. Thus, if you want to use Openbabel 2.3.2, you can't use the knowledge-based file that we provide and you must re-train the function. Correlation coefficient with experiments is R=0.570 in the testing set of 195 complexes.
+
+5. Use of KBP2016-Training.
+---------------------------
+To prepare a knowledge-based potential, use the program with: "./KBP2016-Training.exe 3.0 5.0 8.5 TrainingList.txt Library/" where the first three parameters define the shells, TrainingList.txt is a text file with the name of PDB complexes, and Library is a directory where each complexe has its own folder. In each folder, you need to have a file for the protein and a file for the ligand (for example, in the 10gs folder you need 10gs_protein.pdb and 10gs_ligand.sdf). We have used the PDBBind-CN database and have kept their structure. Preparing a potential takes roughly 15 minutes.
+
+If during the training you see warning as below, you can safely ignore them:
+==============================
+*** Open Babel Warning  in GetAtomicNum
+  Cannot understand the element label Un.
+==============================
+*** Open Babel Warning  in GetAtomicNum
+  Cannot understand the element label Du.
+
+6. Comment about the code.
+--------------------------
+The purpose of the development of this function was initially to include it in the OpenGrowth program. Thus, the structure of the code follows what was used during the development of OpenGrowth.
+

@@ -1,0 +1,19 @@
+source leaprc.ff03.r1
+source leaprc.gaff
+
+loadamberparams NAMELIGAND_AC.frcmod
+LIG = loadmol2 NAMELIGAND.mol2
+check LIG
+
+COM = loadpdb Complex.pdb
+REC = loadpdb Receptor.pdb
+LIGAND = loadpdb Ligand.pdb
+
+set default PBRadii mbondi2
+
+saveamberparm LIGAND Ligand.prmtop NAMELIGAND_Ligand.inpcrd
+saveamberparm REC Receptor.prmtop NAMELIGAND_Receptor.inpcrd
+saveamberparm COM Complex.prmtop NAMELIGAND_Complex.inpcrd
+
+quit
+

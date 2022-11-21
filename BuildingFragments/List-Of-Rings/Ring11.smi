@@ -1,0 +1,3 @@
+OCC=C1CN2CCC34C2CC1C1=CN2c5ccccc5C56C2C(=CN(C31)c1c4cccc1)C1CC5N(CC6)CC1=CCO							Ring11_1	584.764		1
+O=C1Cc2ccc(cc2)Oc2cc(C3NC(=O)C(N1)Cc1ccc(cc1)Oc1cc4cc(C(NC3=O)C(=O)NC3C(=O)NC(Cc5ccc(O4)cc5)C(=O)NCc4c(c5cc3ccc5)cccc4)c1)ccc2	Ring11_2	959.028		1
+O=C1Cc2cccc(c2)Oc2cccc(C3NC(=O)C(N1)Cc1ccc(cc1)Oc1cc4cc(C(NC3=O)C(=O)NC3C(=O)NC(Cc5ccc(O4)cc5)C(=O)NCc4c(c5cc3ccc5)cccc4)c1)c2	Ring11_3	959.028		9

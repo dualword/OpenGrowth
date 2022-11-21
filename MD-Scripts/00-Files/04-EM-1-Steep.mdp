@@ -1,0 +1,50 @@
+;       Made by Nicolas
+;       Input file for energy minimisation
+;       http://manual.gromacs.org/current/online/mdp-opt.html
+
+; CONTROLING OF PROCESSES
+define                  = -DFLEXIBLE    ; -DFLEXIBLE will tell grompp to include the flexible SPC water model instead of the rigid SPC into your topology. This allows steepest descents to minimize further
+
+; RUN CONTROL PARAMETERS
+integrator              = steep         ; Algorithm (steep = steepest descent minimization, cg = conjugate gradient)
+emstep                  = 0.01          ; Initial step size in nm
+nsteps                  = 50000         ; Maximum number of (minimization) steps to perform
+emtol                   = 5.0           ; Stop minimization when the maximum force < 5.0 kJ/mol/nm
+
+; OUTPUT CONTROL OPTIONS
+energygrps              = System        ; Which energy group(s) to write to disk
+nstenergy               = 100           ; Write energies to disk every nstenergy steps
+
+; NEIGHBORSEARCHING PARAMETERS
+cutoff-scheme           = Verlet        ; How to generate the pair list
+nstlist                 = 20            ; Frequency to update the neighbor list
+ns-type                 = grid          ; Method to determine neighbor list (simple, grid)
+pbc                     = xyz           ; Periodic Boundary Conditions (yes/no)
+rlist                   = 1.0           ; Cut-off distance for making neighbor list (short range forces)
+
+; OPTIONS FOR ELECTROSTATICS AND VDW
+coulombtype             = PME           ; Treatment of long range electrostatic interactions. 
+rcoulomb                = 1.0           ; Distance in nm for the long range electrostatic cut-off. Must be equal to rlist for PME.
+vdwtype                 = Cut-off       ; Tells Gromacs how to treat van der Waals interactions (cut-off, Shift, etc.)
+rvdw                    = 1.0           ; Distance in nm for the LJ or Buckingham potential cut-off (long range Van der Waals) 
+dispcorr	        = EnerPres	; Apply long range dispersion corrections for Energy and Pressure
+fourierspacing          = 0.12          ; The maximum grid spacing in nm for the FFT grid when using PPPM or PME
+pme-order               = 4             ; Interpolation order for PME. 4 equals cubic interpolation. You might try 6/8/10 when running in parallel and simultaneously decrease grid dimension
+ewald-rtol              = 1e-5          ; Relative strength of the Ewald-shifted direct potential at rcoulomb
+optimize-fft            = yes           ; Calculate the optimal FFT plan for the grid at startup. This saves a few percent for long simulations, but takes a couple of minutes at start
+
+; TEMPERATURE COUPLING  
+tcoupl                  = no            ; Couple temperature to external heat bath
+
+; PRESSURE COUPLING (NOT ON)
+pcoupl                  = no            ; Couple pressure to external bath
+
+; GENERATE VELOCITIES FOR STARTUP RUN
+gen-vel                 = no            ; Assign velocities to particles by taking them randomly from a Maxwell distribution
+
+; OPTIONS FOR BONDS 
+constraints             = none          ; Bonds to be treated as constraints (fixed length): h-bonds, all-bonds or none - First all the bonds, then nothing
+
+; MISC
+nstcomm                 = 100           ; Frequency for center of mass motion removal
+

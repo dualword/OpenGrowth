@@ -1,0 +1,7 @@
+Input file for running PB
+&general
+  startframe=1, endframe=500, interval=1, verbose=2, keep_files=1,
+/
+&pb
+  inp=1, cavity_surften=0.0072, cavity_offset=0.0, istrng=0.000,
+/

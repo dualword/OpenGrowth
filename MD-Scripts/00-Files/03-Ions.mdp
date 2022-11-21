@@ -1,0 +1,28 @@
+;       Made by Nicolas
+;       Input file for adding ions
+;       http://manual.gromacs.org/current/online/mdp-opt.html
+
+; RUN CONTROL PARAMETERS - WHAT TO DO, WHEN TO STOP AND WHAT TO SAVE
+integrator              = steep         ; Algorithm (steep = steepest descent minimization, cg = conjugate gradient)
+emtol                   = 10.0          ; Stop minimization when the maximum force < 10.0 kJ/mol
+emstep                  = 0.01          ; Initial step size in nm
+nsteps                  = 20000         ; Maximum number of (minimization) steps to perform
+
+; NEIGHBORSEARCHING PARAMETERS
+cutoff-scheme           = Verlet        ; How to generate the pair list
+nstlist                 = 20            ; Frequency to update the neighbor list
+ns-type                 = grid          ; Method to determine neighbor list (simple, grid)
+pbc                     = xyz           ; Periodic Boundary Conditions (yes/no)
+rlist                   = 1.0           ; Cut-off distance for making neighbor list (short range forces)
+
+; OPTIONS FOR ELECTROSTATICS AND VDW
+coulombtype             = PME           ; Treatment of long range electrostatic interactions. 
+rcoulomb                = 1.0           ; Distance in nm for the long range electrostatic cut-off. Must be equal to rlist for PME.
+vdwtype                 = Cut-off       ; Tells Gromacs how to treat van der Waals interactions (cut-off, Shift, etc.)
+rvdw                    = 1.0           ; Distance in nm for the LJ or Buckingham potential cut-off (long range Van der Waals) 
+dispcorr	        = EnerPres	; Apply long range dispersion corrections for Energy and Pressure
+fourierspacing          = 0.12          ; The maximum grid spacing in nm for the FFT grid when using PPPM or PME
+pme-order               = 4             ; Interpolation order for PME. 4 equals cubic interpolation. You might try 6/8/10 when running in parallel and simultaneously decrease grid dimension
+ewald-rtol              = 1e-5          ; Relative strength of the Ewald-shifted direct potential at rcoulomb
+optimize-fft            = yes           ; Calculate the optimal FFT plan for the grid at startup. This saves a few percent for long simulations, but takes a couple of minutes at start
+
